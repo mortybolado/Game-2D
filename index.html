@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Game - Final Polish (Fixed)</title>
+    <style>
+        html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; width: 100%; font-family: 'Courier New', Courier, monospace; }
+        canvas { display: block; background-color: #0d1117; cursor: crosshair; }
+        .hud-button { position: fixed; z-index: 100; padding: 8px 12px; font-size: 16px; background-color: #333; color: white; border: 2px solid #555; border-radius: 5px; cursor: pointer; }
+        #skillTreeButton { top: 10px; right: 10px; }
+        .modal-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 900px; height: 80%; max-height: 600px; background-color: rgba(20, 20, 30, 0.95); border: 2px solid #0095DD; border-radius: 10px; z-index: 99; color: white; padding: 20px; box-sizing: border-box; display: none; flex-direction: column; }
+        .modal-close-button { position: absolute; top: 10px; right: 15px; font-size: 30px; background: none; border: none; color: white; cursor: pointer; }
+        #skillTreePanel h2 { text-align: center; margin-top: 0; color: #FFA500; }
+        #skill-points-display { text-align: center; font-size: 20px; margin-bottom: 20px; }
+        #skill-tree-container { display: flex; justify-content: space-around; flex-grow: 1; gap: 15px; }
+        .skill-tree { width: 24%; padding: 15px; border: 1px solid #444; border-radius: 8px; display: flex; flex-direction: column; align-items: center; background-color: #1c1c24; }
+        .skill-tree h3 { margin-top: 0; font-size: 24px; text-align: center; }
+        .skill-tree-fire h3 { color: #FF4500; } .skill-tree-ice h3 { color: #ADD8E6; } .skill-tree-poison h3 { color: #9ACD32; } .skill-tree-electric h3 { color: #FFD700; }
+        .skill-level-indicator { font-size: 14px; color: #888; letter-spacing: 4px; margin: 15px 0; }
+        .skill-desc { font-size: 14px; color: #ccc; flex-grow: 1; text-align: center; }
+        .skill-tree button { width: 100%; padding: 10px; font-size: 16px; margin-top: 5px; border: none; border-radius: 4px; cursor: pointer; }
+        .skill-tree button:disabled { background-color: #555; color: #888; cursor: not-allowed; }
+        .skill-invest-btn { background-color: #007bff; color: white; }
+        .skill-equip-btn { background-color: #444; color: #ccc; }
+        .skill-equip-btn.active { background-color: #7CFC00; color: black; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <button id="skillTreeButton" class="hud-button">Skills (K)</button>
+    <div id="skillTreePanel" class="modal-panel">
+        <button id="skillTreeCloseButton" class="modal-close-button">×</button>
+        <h2>ELEMENTAL SKILL TREES</h2>
+        <div id="skill-points-display"></div>
+        <div id="skill-tree-container"></div>
+    </div>
+    <script src="game.js" defer></script>
+</body>
+</html>
