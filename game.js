@@ -97,7 +97,14 @@ const canvas = document.getElementById('gameCanvas');
                         const distToProj = Math.hypot(proj.x - this.x, proj.y - this.y);
                         if (distToProj < 120) {
                             const angleFromProj = Math.atan2(this.y - proj.y, this.x - proj.x);
-                            const dodgeForce = (120 - distToProj) * 0.08;
+                            const baseDodgeForce = 0.08;
+let dodgeScale = 1;
+if (player.level <= 10) {
+    dodgeScale = 0.3;
+} else if (player.level < 50) {
+    dodgeScale = 0.3 + 0.7 * ((player.level - 10) / 40);
+}
+const dodgeForce = (120 - distToProj) * baseDodgeForce * dodgeScale;
                             moveX += Math.cos(angleFromProj) * dodgeForce; moveY += Math.sin(angleFromProj) * dodgeForce;
                         }
                     }
