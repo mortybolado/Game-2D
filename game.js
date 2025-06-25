@@ -1,4 +1,3 @@
-let thunderstrikes = [];
 
 <style>
   .skill-tree.active-skill {
@@ -128,19 +127,7 @@ const dodgeForce = (120 - distToProj) * baseDodgeForce * dodgeScale;
             shoot(target) { const now=Date.now();if(now-this.lastShotTime>this.shootInterval){const startX=this.x+this.width/2,startY=this.y+this.height/2;const dx=target.x+target.width/2-startX,dy=target.y+target.height/2-startY;enemyProjectiles.push(new Projectile({x:startX,y:startY,dx,dy,speed:4,damage:this.projectileDamage,radius:5}));this.lastShotTime=now} }
         }
         class MOB extends BaseEnemy{constructor(config){super({...config,width:35,height:35,color:"#e91e63",speed:1.5,maxHp:30,expReward:10,projectileDamage:5,shootInterval:2800,idealDistance:300,retreatDistance:150})}}
-        class MOBTANK extends BaseEnemy{constructor(config){super({...config,width:55,height:55,color:"#673ab7",speed:0.6,maxHp:100,expReward:25,projectileDamage:12,shootInterval:4500,idealDistance:250,retreatDistance:100});this.maxShieldHp=50+(player.level*20);this.shieldHp=this.maxShieldHp}takeDamage(a,b,c){
-        if (this.shieldHp > 0) {
-            this.shieldHp -= a;
-            damageNumbers.push({value: Math.round(a), x: this.x + this.width/2, y: this.y, creationTime: Date.now(), color: '#00e6ff', isCrit: b || c});
-            if (this.shieldHp < 0) {
-                const leftover = -this.shieldHp;
-                this.shieldHp = 0;
-                super.takeDamage(leftover, b, c);
-            }
-        } else {
-            super.takeDamage(a, b, c);
-        }
-    }else super.takeDamage(a,b,c)}draw(){super.draw();if(this.shieldHp>0){ctx.beginPath();ctx.arc(this.x+this.width/2,this.y+this.height/2,this.width/2+5,0,2*Math.PI);ctx.strokeStyle=`rgba(0,230,255,${.3+.7*(this.shieldHp/this.maxShieldHp)})`;ctx.lineWidth=3;ctx.stroke();ctx.closePath()}}}
+        class MOBTANK extends BaseEnemy{constructor(config){super({...config,width:55,height:55,color:"#673ab7",speed:0.6,maxHp:100,expReward:25,projectileDamage:12,shootInterval:4500,idealDistance:250,retreatDistance:100});this.maxShieldHp=50+(player.level*20);this.shieldHp=this.maxShieldHp}takeDamage(a,b,c){if(this.shieldHp>0){this.shieldHp-=a;damageNumbers.push({value:Math.round(a),x:this.x+this.width/2,y:this.y,creationTime:Date.now(),color:'#00e6ff',isCrit:b||c});if(this.shieldHp<0)this.hp+=this.shieldHp;this.shieldHp=0}else super.takeDamage(a,b,c)}draw(){super.draw();if(this.shieldHp>0){ctx.beginPath();ctx.arc(this.x+this.width/2,this.y+this.height/2,this.width/2+5,0,2*Math.PI);ctx.strokeStyle=`rgba(0,230,255,${.3+.7*(this.shieldHp/this.maxShieldHp)})`;ctx.lineWidth=3;ctx.stroke();ctx.closePath()}}}
         class MOBSPEED extends BaseEnemy{constructor(config){super({...config,width:30,height:30,color:"#ff9800",speed:2.5,maxHp:20,expReward:15,projectileDamage:3,shootInterval:1800,idealDistance:450,retreatDistance:300})}}
         class BossEnemy extends BaseEnemy{
             constructor(config){
@@ -237,7 +224,6 @@ document.querySelector(`.skill-tree-${key}`).classList.toggle('active-skill', tr
         
         // --- MAIN GAME LOOP ---
         function gameLoop() {
-  updateThunderstrikes(); {
             requestAnimationFrame(gameLoop);
             const now = Date.now(); ctx.clearRect(0, 0, canvas.width, canvas.height);
             if (isGameOver) { drawGameOver(); return; }
@@ -267,70 +253,3 @@ document.querySelector(`.skill-tree-${key}`).classList.toggle('active-skill', tr
         handleResize();
         resetGame();
         gameLoop();
-function spawnThunderstrike(x, y) {
-    const strike = {
-        x,
-        y,
-        startTime: Date.now(),
-        phase: 'fadeIn',
-        alpha: 0,
-        flashed: false
-    };
-    thunderstrikes.push(strike);
-}
-
-function updateThunderstrikes() {
-    const now = Date.now();
-    for (let i = thunderstrikes.length - 1; i >= 0; i--) {
-        const t = thunderstrikes[i];
-        const elapsed = now - t.startTime;
-
-        if (elapsed < 1500) {
-            t.alpha = elapsed / 1500;
-        } else if (!t.flashed) {
-            t.phase = 'flash';
-            t.alpha = 1;
-            t.flashed = true;
-
-            enemies.forEach(e => {
-                const dx = e.x + e.width/2 - t.x;
-                const dy = e.y + e.height/2 - t.y;
-                const dist = Math.hypot(dx, dy);
-                if (dist < 60) {
-                    if (e.shieldHp && e.shieldHp > 0) {
-                        e.shieldHp = 0;
-                    } else {
-                        e.takeDamage(e.hp + 9999, false, true);
-                    }
-                }
-            });
-        } else if (elapsed > 1800) {
-            thunderstrikes.splice(i, 1);
-        }
-    }
-}
-
-function drawThunderstrikes() {
-    thunderstrikes.forEach(t => {
-        ctx.save();
-        ctx.globalAlpha = t.alpha;
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(t.x, 0);
-        ctx.lineTo(t.x, canvas.height);
-        ctx.stroke();
-        ctx.restore();
-    });
-}
-
-
-
-function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawPlayer();
-    enemies.forEach(e => e.draw && e.draw());
-    projectiles.forEach(p => drawProjectile(p));
-    enemyProjectiles.forEach(p => drawEnemyProjectile(p));
-    drawThunderstrikes();
-}
